@@ -5,7 +5,11 @@ import { Container } from "../ui/Container";
 import { Heading, Text } from "../ui/Typography";
 import { TeamMemberCard } from "../shared/TeamMemberCard";
 import { ANIMATION_VARIANTS } from "@/src/lib/constants";
-import type { TeamMember } from "@/src/types";
+import type { LandingPageTeam, TeamMember } from "@/src/types";
+
+interface TeamSectionProps {
+  data?: LandingPageTeam | null;
+}
 
 const teamMembers: TeamMember[] = [
   {
@@ -34,7 +38,25 @@ const teamMembers: TeamMember[] = [
   },
 ];
 
-export function TeamSection() {
+export function TeamSection({ data }: TeamSectionProps) {
+  const eyebrow = data?.eyebrow ?? "TEAM";
+  const title = data?.title ?? "Meet Our Expert Team";
+  const description =
+    data?.description ??
+    "Behind every great product is a dedicated team of specialists. Our experts combine science, innovation, and passion to create safe and effective skincare you can trust.";
+  const members = data?.members?.length ? data.members : teamMembers;
+  const normalizedMembers = members.map((member, index) => {
+    const fallback = teamMembers[index] ?? teamMembers[0];
+
+    return {
+      ...member,
+      id: member.id ?? fallback?.id ?? String(index + 1),
+      name: member.name ?? fallback?.name ?? "",
+      role: member.role ?? fallback?.role ?? "",
+      image: member.image ?? fallback?.image ?? ""
+    };
+  });
+
   return (
     <section className="py-20 lg:py-32" id="team">
       <Container>
@@ -47,20 +69,24 @@ export function TeamSection() {
         >
           <motion.div variants={ANIMATION_VARIANTS.fadeInUp}>
             <Text variant="small" className="uppercase tracking-wider text-foreground/60 mb-3">
-              TEAM
+              {eyebrow}
             </Text>
             <Heading as="h2" className="mb-4">
-              Meet Our Expert Team
+              {title}
             </Heading>
             <Text variant="lead" className="max-w-3xl mx-auto">
-              Behind every great product is a dedicated team of specialists. Our experts combine science, innovation, and passion to create safe and effective skincare you can trust.
+              {description}
             </Text>
           </motion.div>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {teamMembers.map((member, index) => (
-            <TeamMemberCard key={member.id} member={member} index={index} />
+          {normalizedMembers.map((member, index) => (
+            <TeamMemberCard
+              key={member.id ?? `${member.name}-${index}`}
+              member={member}
+              index={index}
+            />
           ))}
         </div>
       </Container>
