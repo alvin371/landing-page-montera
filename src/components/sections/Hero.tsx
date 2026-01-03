@@ -5,14 +5,46 @@ import { Container } from "../ui/Container";
 import { Heading, Text } from "../ui/Typography";
 import { Button } from "../ui/Button";
 import { ANIMATION_VARIANTS } from "@/src/lib/constants";
+import type { LandingPageHero } from "@/src/types";
 
-export function Hero() {
+interface HeroProps {
+  data?: LandingPageHero | null;
+}
+
+const defaultHero: LandingPageHero = {
+  background_image_url: "/assets/background-heroes.png",
+  title: {
+    line_1: "Elevate Your Beauty,",
+    line_2: "Embrace Your Glow"
+  },
+  subtitle:
+    "Discover premium skincare solutions crafted with natural ingredients to enhance your natural radiance and confidence.",
+  primary_cta: {
+    label: "Shop Now",
+    href: "#"
+  },
+  secondary_cta: {
+    label: "Learn More",
+    href: "#"
+  }
+};
+
+export function Hero({ data }: HeroProps) {
+  const hero = data ?? defaultHero;
+  const backgroundImageUrl =
+    hero.background_image_url ?? defaultHero.background_image_url ?? "";
+  const titleLine1 = hero.title?.line_1 ?? defaultHero.title?.line_1 ?? "";
+  const titleLine2 = hero.title?.line_2 ?? defaultHero.title?.line_2 ?? "";
+  const subtitle = hero.subtitle ?? defaultHero.subtitle ?? "";
+  const primary = hero.primary_cta ?? defaultHero.primary_cta ?? {};
+  const secondary = hero.secondary_cta ?? defaultHero.secondary_cta ?? {};
+
   return (
     <section
       className="relative py-20 lg:py-32 overflow-hidden bg-no-repeat bg-contain lg:bg-cover bg-center"
       id="home"
       style={{
-        backgroundImage: "url(/assets/background-heroes.png)"
+        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : ""
       }}
     >
       <Container>
@@ -26,13 +58,12 @@ export function Hero() {
           >
             <motion.div variants={ANIMATION_VARIANTS.fadeInUp}>
               <Heading as="h1" className="mb-6">
-                Elevate Your Beauty,
+                {titleLine1}
                 <br />
-                <span className="text-foreground/70">Embrace Your Glow</span>
+                <span className="text-foreground/70">{titleLine2}</span>
               </Heading>
               <Text variant="lead" className="mb-8 max-w-xl">
-                Discover premium skincare solutions crafted with natural
-                ingredients to enhance your natural radiance and confidence.
+                {subtitle}
               </Text>
             </motion.div>
 
@@ -40,12 +71,20 @@ export function Hero() {
               variants={ANIMATION_VARIANTS.fadeInUp}
               className="flex flex-wrap gap-4"
             >
-              <Button size="lg" variant="primary">
-                Shop Now
-              </Button>
-              <Button size="lg" variant="outline">
-                Learn More
-              </Button>
+              {primary.label ? (
+                <a href={primary.href ?? "#"} className="inline-flex">
+                  <Button size="lg" variant="primary">
+                    {primary.label}
+                  </Button>
+                </a>
+              ) : null}
+              {secondary.label ? (
+                <a href={secondary.href ?? "#"} className="inline-flex">
+                  <Button size="lg" variant="outline">
+                    {secondary.label}
+                  </Button>
+                </a>
+              ) : null}
             </motion.div>
           </motion.div>
 

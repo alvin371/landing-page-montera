@@ -10,6 +10,8 @@ interface TeamMemberCardProps {
 }
 
 export function TeamMemberCard({ member, index = 0 }: TeamMemberCardProps) {
+  const isExternal = typeof member.image === "string" && member.image.startsWith("http");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -21,13 +23,21 @@ export function TeamMemberCard({ member, index = 0 }: TeamMemberCardProps) {
       {/* Image Container with Gradient Overlay */}
       <div className="relative aspect-[3/4.2] bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
         {/* Team member image */}
-        <Image
-          src={member.image}
-          alt={member.name}
-          fill
-          className="object-cover"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-        />
+        {isExternal ? (
+          <img
+            src={member.image}
+            alt={member.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <Image
+            src={member.image}
+            alt={member.name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
+        )}
 
         {/* Dark gradient overlay at bottom */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

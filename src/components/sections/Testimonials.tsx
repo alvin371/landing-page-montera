@@ -6,9 +6,17 @@ import { Heading, Text } from "../ui/Typography";
 import { TestimonialCard } from "../shared/TestimonialCard";
 import { Carousel } from "../ui/Carousel";
 import { ANIMATION_VARIANTS } from "@/src/lib/constants";
-import type { Testimonial } from "@/src/types";
+import type {
+  LandingPageTestimonials,
+  LandingPageTestimonialItem,
+  Testimonial
+} from "@/src/types";
 
-const testimonials: Testimonial[] = [
+interface TestimonialsProps {
+  data?: LandingPageTestimonials | null;
+}
+
+const defaultTestimonials: Testimonial[] = [
   {
     id: "1",
     name: "Alya Prameswari",
@@ -48,18 +56,52 @@ type CarouselItem = {
   id: string;
 };
 
-const carouselItems: CarouselItem[] = [];
+export function Testimonials({ data }: TestimonialsProps) {
+  const eyebrow = data?.eyebrow ?? "Testimoni";
+  const title = data?.title ?? "What Our Customers Say";
+  const description =
+    data?.description ??
+    "Real stories, real results. Discover how our products have made a difference in people's daily care routines.";
 
-// Build pattern: Before -> After -> Text -> Before -> After -> Text...
-testimonials.forEach((testimonial, index) => {
-  carouselItems.push(
-    { type: "before", testimonial, id: `before-${testimonial.id}` },
-    { type: "after", testimonial, id: `after-${testimonial.id}` },
-    { type: "text", testimonial, id: `text-${testimonial.id}` }
-  );
-});
+  const itemsSource = (data?.items?.length
+    ? data.items
+    : defaultTestimonials) as Array<LandingPageTestimonialItem | Testimonial>;
 
-export function Testimonials() {
+  const normalizedTestimonials = itemsSource.map((item, index) => {
+    const fallback = defaultTestimonials[index] ?? defaultTestimonials[0];
+    const beforeImage =
+      (item as LandingPageTestimonialItem).beforeImage ??
+      (item as LandingPageTestimonialItem).before_image ??
+      (item as Testimonial).beforeImage ??
+      fallback.beforeImage;
+    const afterImage =
+      (item as LandingPageTestimonialItem).afterImage ??
+      (item as LandingPageTestimonialItem).after_image ??
+      (item as Testimonial).afterImage ??
+      fallback.afterImage;
+
+    return {
+      id: (item as Testimonial).id ?? (item as LandingPageTestimonialItem).id ?? String(index + 1),
+      name: (item as Testimonial).name ?? (item as LandingPageTestimonialItem).name ?? fallback.name,
+      role: (item as Testimonial).role ?? (item as LandingPageTestimonialItem).role ?? fallback.role,
+      beforeImage,
+      afterImage,
+      content:
+        (item as Testimonial).content ?? (item as LandingPageTestimonialItem).content ?? fallback.content,
+      rating:
+        (item as Testimonial).rating ?? (item as LandingPageTestimonialItem).rating ?? fallback.rating
+    };
+  });
+
+  const carouselItems: CarouselItem[] = [];
+  normalizedTestimonials.forEach((testimonial) => {
+    carouselItems.push(
+      { type: "before", testimonial, id: `before-${testimonial.id}` },
+      { type: "after", testimonial, id: `after-${testimonial.id}` },
+      { type: "text", testimonial, id: `text-${testimonial.id}` }
+    );
+  });
+
   return (
     <section className="py-20 lg:py-32 bg-white" id="testimoni">
       <Container>
@@ -75,17 +117,16 @@ export function Testimonials() {
               variant="muted"
               className="uppercase text-sm tracking-wider mb-3"
             >
-              Testimoni
+              {eyebrow}
             </Text>
             <Heading as="h2" className="mb-4">
-              What Our Customers Say
+              {title}
             </Heading>
             <Text
               variant="lead"
               className="max-w-3xl mx-auto text-foreground/70"
             >
-              Real stories, real results. Discover how our products have made a
-              difference in people&apos;s daily care routines.
+              {description}
             </Text>
           </motion.div>
         </motion.div>

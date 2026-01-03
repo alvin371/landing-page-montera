@@ -9,8 +9,21 @@ import {
   NAVIGATION_LINKS_RIGHT
 } from "@/src/lib/constants";
 import { cn } from "@/src/lib/utils";
+import type { LandingPageNavbar, NavigationLink } from "@/src/types";
 
-export function Navbar() {
+interface NavbarProps {
+  data?: LandingPageNavbar | null;
+}
+
+function getLinks(value: NavigationLink[] | undefined, fallback: readonly NavigationLink[]) {
+  return value && value.length > 0 ? value : [...fallback];
+}
+
+export function Navbar({ data }: NavbarProps) {
+  const linksLeft = getLinks(data?.links_left, NAVIGATION_LINKS_LEFT);
+  const linksRight = getLinks(data?.links_right, NAVIGATION_LINKS_RIGHT);
+  const logoUrl = data?.logo?.url ?? "/assets/montera-logo.png";
+  const logoAlt = data?.logo?.alt ?? "Montera Logo";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#home");
@@ -20,14 +33,9 @@ export function Navbar() {
       setIsScrolled(window.scrollY > 10);
 
       // Update active section based on scroll position
-      const sections = [
-        "#home",
-        "#advantage",
-        "#best-product",
-        "#new-product",
-        "#team",
-        "#testimoni"
-      ];
+      const sections = [...linksLeft, ...linksRight]
+        .map((link) => link.href)
+        .filter((href) => href.startsWith("#"));
 
       for (const section of sections) {
         const element = document.querySelector(section);
@@ -90,9 +98,9 @@ export function Navbar() {
           <div className="flex items-center justify-between px-8 py-4">
             {/* Left Navigation */}
             <div className="hidden lg:flex items-center gap-8">
-              {NAVIGATION_LINKS_LEFT.map((link) => (
+              {linksLeft.map((link) => (
                 <a
-                  key={link.href}
+                  key={link.id ?? link.href}
                   href={link.href}
                   onClick={(e) => handleSmoothScroll(e, link.href)}
                   className={cn(
@@ -114,22 +122,30 @@ export function Navbar() {
                 onClick={(e) => handleSmoothScroll(e, "#home")}
                 className="flex items-center gap-2"
               >
-                <Image
-                  src="/assets/montera-logo.png"
-                  alt="Montera Logo"
-                  width={80}
-                  height={80}
-                  className="w-12 h-12"
-                  priority
-                />
+                {logoUrl.startsWith("http") ? (
+                  <img
+                    src={logoUrl}
+                    alt={logoAlt}
+                    className="w-12 h-12 object-contain"
+                  />
+                ) : (
+                  <Image
+                    src={logoUrl}
+                    alt={logoAlt}
+                    width={80}
+                    height={80}
+                    className="w-12 h-12"
+                    priority
+                  />
+                )}
               </a>
             </div>
 
             {/* Right Navigation */}
             <div className="hidden lg:flex items-center gap-8">
-              {NAVIGATION_LINKS_RIGHT.map((link) => (
+              {linksRight.map((link) => (
                 <a
-                  key={link.href}
+                  key={link.id ?? link.href}
                   href={link.href}
                   onClick={(e) => handleSmoothScroll(e, link.href)}
                   className={cn(
@@ -186,10 +202,10 @@ export function Navbar() {
                 className="lg:hidden border-t border-foreground/10 overflow-hidden"
               >
                 <div className="px-8 py-6 space-y-4">
-                  {[...NAVIGATION_LINKS_LEFT, ...NAVIGATION_LINKS_RIGHT].map(
+                  {[...linksLeft, ...linksRight].map(
                     (link) => (
                       <a
-                        key={link.href}
+                        key={link.id ?? link.href}
                         href={link.href}
                         onClick={(e) => handleSmoothScroll(e, link.href)}
                         className={cn(

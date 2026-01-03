@@ -6,8 +6,20 @@ import { Container } from "../ui/Container";
 import { customerFavorites } from "@/src/data/customerFavorites";
 import { ProductModal } from "../modals/ProductModal";
 import Image from "next/image";
+import type {
+  CustomerFavoriteProduct,
+  LandingPageCustomerFavorites,
+  LandingPageCustomerFavoriteItem
+} from "@/src/types";
 
-export function CustomerFavorites() {
+interface CustomerFavoritesProps {
+  data?: LandingPageCustomerFavorites | null;
+}
+
+const isExternalUrl = (value?: string) =>
+  typeof value === "string" && value.startsWith("http");
+
+export function CustomerFavorites({ data }: CustomerFavoritesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{
     name: string;
@@ -16,6 +28,53 @@ export function CustomerFavorites() {
     image: string;
     miniImage: string;
   } | null>(null);
+
+  const eyebrow = data?.eyebrow ?? "BEST PRODUCT";
+  const title = data?.title ?? "Most Loved by Our Customers";
+  const description =
+    data?.description ??
+    "Crafted with natural ingredients and thoughtful formulation, this product has become a favorite for those who value gentle yet effective care.";
+
+  const itemsSource = (data?.items?.length
+    ? data.items
+    : customerFavorites) as Array<
+    LandingPageCustomerFavoriteItem | CustomerFavoriteProduct
+  >;
+  const normalizedItems = itemsSource.map((item, index) => {
+    const fallback = customerFavorites[index] ?? customerFavorites[0];
+    const itemData = item as LandingPageCustomerFavoriteItem &
+      CustomerFavoriteProduct;
+    const categoryHeading =
+      itemData.categoryHeading ??
+      itemData.category_heading ??
+      fallback?.categoryHeading ??
+      "";
+    const categoryDescription =
+      itemData.categoryDescription ??
+      itemData.category_description ??
+      fallback?.categoryDescription ??
+      [];
+    const showcase =
+      itemData.productShowcase ??
+      itemData.product_showcase ??
+      fallback?.productShowcase ??
+      {};
+    const miniImage =
+      showcase.miniImage ?? showcase.mini_image ?? fallback?.productShowcase?.miniImage ?? "";
+    const image = showcase.image ?? fallback?.productShowcase?.image ?? "";
+
+    return {
+      id: item.id ?? fallback?.id ?? String(index + 1),
+      categoryHeading,
+      categoryDescription,
+      productShowcase: {
+        name: showcase.name ?? fallback?.productShowcase?.name ?? "",
+        description: showcase.description ?? fallback?.productShowcase?.description ?? "",
+        image,
+        miniImage
+      }
+    };
+  });
 
   const handleProductClick = (product: {
     name: string;
@@ -46,21 +105,19 @@ export function CustomerFavorites() {
             className="text-center mb-16 lg:mb-20"
           >
             <p className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-3">
-              BEST PRODUCT
+              {eyebrow}
             </p>
             <h2 className="text-3xl lg:text-5xl font-bold mb-4 text-foreground">
-              Most Loved by Our Customers
+              {title}
             </h2>
             <p className="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
-              Crafted with natural ingredients and thoughtful formulation, this
-              product has become a favorite for those who value gentle yet
-              effective care.
+              {description}
             </p>
           </motion.div>
 
           {/* Products Grid */}
           <div className="space-y-16 lg:space-y-24">
-            {customerFavorites.map((item, index) => {
+            {normalizedItems.map((item, index) => {
               const isEven = index % 2 === 1;
 
               return (
@@ -93,13 +150,23 @@ export function CustomerFavorites() {
                           border: "3px solid #E8E8E8"
                         }}
                       >
-                        <Image
-                          src={item.productShowcase.miniImage}
-                          alt="Floating Product"
-                          width={120}
-                          height={120}
-                          className="object-cover"
-                        />
+                        {isExternalUrl(item.productShowcase.miniImage) ? (
+                          <img
+                            src={item.productShowcase.miniImage}
+                            alt="Floating Product"
+                            className="object-cover"
+                            width={120}
+                            height={120}
+                          />
+                        ) : (
+                          <Image
+                            src={item.productShowcase.miniImage}
+                            alt="Floating Product"
+                            width={120}
+                            height={120}
+                            className="object-cover"
+                          />
+                        )}
                       </motion.div>
 
                       <div
@@ -110,12 +177,21 @@ export function CustomerFavorites() {
                       >
                         {/* Full Background Product Image */}
                         <div className="absolute inset-0">
-                          <Image
-                            src={item.productShowcase.image}
-                            alt="Product Background"
-                            fill
-                            className="object-cover"
-                          />
+                          {isExternalUrl(item.productShowcase.image) ? (
+                            <img
+                              src={item.productShowcase.image}
+                              alt="Product Background"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Image
+                              src={item.productShowcase.image}
+                              alt="Product Background"
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 1024px) 100vw, 50vw"
+                            />
+                          )}
                         </div>
 
                         {/* Product Content Card - Glassmorphism */}
@@ -135,13 +211,23 @@ export function CustomerFavorites() {
                         >
                           {/* Product Title with Icon */}
                           <div className="flex items-center gap-3 mb-4">
-                            <Image
-                              src={item.productShowcase.miniImage}
-                              alt="Product Icon"
-                              width={50}
-                              height={50}
-                              className="object-contain"
-                            />
+                            {isExternalUrl(item.productShowcase.miniImage) ? (
+                              <img
+                                src={item.productShowcase.miniImage}
+                                alt="Product Icon"
+                                className="object-contain"
+                                width={50}
+                                height={50}
+                              />
+                            ) : (
+                              <Image
+                                src={item.productShowcase.miniImage}
+                                alt="Product Icon"
+                                width={50}
+                                height={50}
+                                className="object-contain"
+                              />
+                            )}
                             <h4 className="text-lg lg:text-xl font-bold text-foreground">
                               {item.productShowcase.name}
                             </h4>

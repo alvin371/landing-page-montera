@@ -16,6 +16,9 @@ interface ProductModalProps {
 }
 
 export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
+  const isExternal =
+    typeof product?.image === "string" && product.image.startsWith("http");
+
   // Close modal on ESC key press
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -85,12 +88,20 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
               {/* Product Image */}
               <div className="flex justify-center mb-6">
                 <div className="relative w-64 h-64 lg:w-80 lg:h-80">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover rounded-2xl"
-                  />
+                  {isExternal ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                    />
+                  ) : (
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover rounded-2xl"
+                    />
+                  )}
                 </div>
               </div>
 
