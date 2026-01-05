@@ -251,22 +251,15 @@ export function NewProducts({ data }: NewProductsProps) {
 
                   {/* Product Image */}
                   <div className="relative w-full h-full flex items-center justify-center">
-                    {isExternalUrl(productImage) ? (
-                      <img
-                        src={productImage}
-                        alt={productName}
-                        className="object-contain w-full h-full"
-                      />
-                    ) : (
-                      <Image
-                        src={productImage}
-                        alt={productName}
-                        width={400}
-                        height={400}
-                        className="object-contain w-full h-full"
-                        priority
-                      />
-                    )}
+                    <Image
+                      src={productImage}
+                      alt={productName}
+                      width={400}
+                      height={400}
+                      className="object-contain w-full h-full"
+                      priority
+                      unoptimized={isExternalUrl(productImage)}
+                    />
                   </div>
                 </motion.div>
               </motion.div>
@@ -287,10 +280,13 @@ export function NewProducts({ data }: NewProductsProps) {
                     className="flex items-center gap-3 lg:gap-4 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 lg:py-4 shadow-md hover:shadow-lg transition-shadow"
                   >
                     {feature.icon_url ? (
-                      <img
+                      <Image
                         src={feature.icon_url}
                         alt={feature.label ?? "feature icon"}
+                        width={36}
+                        height={36}
                         className="w-9 h-9 object-contain"
+                        unoptimized={isExternalUrl(feature.icon_url)}
                       />
                     ) : (
                       <span className="text-2xl lg:text-3xl">

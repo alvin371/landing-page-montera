@@ -111,23 +111,14 @@ export function Footer({ data }: FooterProps) {
           <div className="lg:col-span-2 space-y-6">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              {isExternalUrl(logoUrl) ? (
-                <img
-                  src={logoUrl}
-                  alt={logoAlt}
-                  className="w-15 h-15 object-contain"
-                  width={60}
-                  height={60}
-                />
-              ) : (
-                <Image
-                  src={logoUrl}
-                  alt={logoAlt}
-                  width={60}
-                  height={60}
-                  className="w-15 h-15"
-                />
-              )}
+              <Image
+                src={logoUrl}
+                alt={logoAlt}
+                width={60}
+                height={60}
+                className="w-15 h-15"
+                unoptimized={isExternalUrl(logoUrl)}
+              />
             </div>
 
             {/* Tagline */}

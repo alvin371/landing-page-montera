@@ -150,23 +150,14 @@ export function CustomerFavorites({ data }: CustomerFavoritesProps) {
                           border: "3px solid #E8E8E8"
                         }}
                       >
-                        {isExternalUrl(item.productShowcase.miniImage) ? (
-                          <img
-                            src={item.productShowcase.miniImage}
-                            alt="Floating Product"
-                            className="object-cover"
-                            width={120}
-                            height={120}
-                          />
-                        ) : (
-                          <Image
-                            src={item.productShowcase.miniImage}
-                            alt="Floating Product"
-                            width={120}
-                            height={120}
-                            className="object-cover"
-                          />
-                        )}
+                        <Image
+                          src={item.productShowcase.miniImage}
+                          alt="Floating Product"
+                          width={120}
+                          height={120}
+                          className="object-cover"
+                          unoptimized={isExternalUrl(item.productShowcase.miniImage)}
+                        />
                       </motion.div>
 
                       <div
@@ -177,21 +168,14 @@ export function CustomerFavorites({ data }: CustomerFavoritesProps) {
                       >
                         {/* Full Background Product Image */}
                         <div className="absolute inset-0">
-                          {isExternalUrl(item.productShowcase.image) ? (
-                            <img
-                              src={item.productShowcase.image}
-                              alt="Product Background"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Image
-                              src={item.productShowcase.image}
-                              alt="Product Background"
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 1024px) 100vw, 50vw"
-                            />
-                          )}
+                          <Image
+                            src={item.productShowcase.image}
+                            alt="Product Background"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                            unoptimized={isExternalUrl(item.productShowcase.image)}
+                          />
                         </div>
 
                         {/* Product Content Card - Glassmorphism */}
@@ -211,23 +195,14 @@ export function CustomerFavorites({ data }: CustomerFavoritesProps) {
                         >
                           {/* Product Title with Icon */}
                           <div className="flex items-center gap-3 mb-4">
-                            {isExternalUrl(item.productShowcase.miniImage) ? (
-                              <img
-                                src={item.productShowcase.miniImage}
-                                alt="Product Icon"
-                                className="object-contain"
-                                width={50}
-                                height={50}
-                              />
-                            ) : (
-                              <Image
-                                src={item.productShowcase.miniImage}
-                                alt="Product Icon"
-                                width={50}
-                                height={50}
-                                className="object-contain"
-                              />
-                            )}
+                            <Image
+                              src={item.productShowcase.miniImage}
+                              alt="Product Icon"
+                              width={50}
+                              height={50}
+                              className="object-contain"
+                              unoptimized={isExternalUrl(item.productShowcase.miniImage)}
+                            />
                             <h4 className="text-lg lg:text-xl font-bold text-foreground">
                               {item.productShowcase.name}
                             </h4>

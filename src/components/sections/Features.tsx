@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Container } from "../ui/Container";
 import { Heading, Text } from "../ui/Typography";
 import { ANIMATION_VARIANTS } from "@/src/lib/constants";
@@ -57,16 +58,21 @@ const defaultFeatures: LandingPageFeatures = {
 };
 
 function resolveFeature(items: LandingPageFeatureItem[], index: number) {
-  return items[index] ?? defaultFeatures.items[index];
+  const fallbackItems = defaultFeatures.items ?? [];
+  return items[index] ?? fallbackItems[index] ?? {};
 }
 
 function FeatureIcon({ item }: { item: LandingPageFeatureItem }) {
   if (item.icon_url) {
+    const isExternal = item.icon_url.startsWith("http");
     return (
-      <img
+      <Image
         src={item.icon_url}
         alt={item.icon_alt ?? item.title}
+        width={20}
+        height={20}
         className="w-5 h-5 object-contain"
+        unoptimized={isExternal}
       />
     );
   }
@@ -89,7 +95,10 @@ function FeatureIcon({ item }: { item: LandingPageFeatureItem }) {
 
 export function Features({ data }: FeaturesProps) {
   const section = data ?? defaultFeatures;
-  const items = section.items && section.items.length > 0 ? section.items : defaultFeatures.items;
+  const items =
+    section.items && section.items.length > 0
+      ? section.items
+      : defaultFeatures.items ?? [];
   const f0 = resolveFeature(items, 0);
   const f1 = resolveFeature(items, 1);
   const f2 = resolveFeature(items, 2);

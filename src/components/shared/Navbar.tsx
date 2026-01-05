@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Container } from "../ui/Container";
@@ -20,8 +20,14 @@ function getLinks(value: NavigationLink[] | undefined, fallback: readonly Naviga
 }
 
 export function Navbar({ data }: NavbarProps) {
-  const linksLeft = getLinks(data?.links_left, NAVIGATION_LINKS_LEFT);
-  const linksRight = getLinks(data?.links_right, NAVIGATION_LINKS_RIGHT);
+  const linksLeft = useMemo(
+    () => getLinks(data?.links_left, NAVIGATION_LINKS_LEFT),
+    [data?.links_left]
+  );
+  const linksRight = useMemo(
+    () => getLinks(data?.links_right, NAVIGATION_LINKS_RIGHT),
+    [data?.links_right]
+  );
   const logoUrl = data?.logo?.url ?? "/assets/montera-logo.png";
   const logoAlt = data?.logo?.alt ?? "Montera Logo";
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,7 +57,7 @@ export function Navbar({ data }: NavbarProps) {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [linksLeft, linksRight]);
 
   const handleSmoothScroll = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -122,22 +128,15 @@ export function Navbar({ data }: NavbarProps) {
                 onClick={(e) => handleSmoothScroll(e, "#home")}
                 className="flex items-center gap-2"
               >
-                {logoUrl.startsWith("http") ? (
-                  <img
-                    src={logoUrl}
-                    alt={logoAlt}
-                    className="w-12 h-12 object-contain"
-                  />
-                ) : (
-                  <Image
-                    src={logoUrl}
-                    alt={logoAlt}
-                    width={80}
-                    height={80}
-                    className="w-12 h-12"
-                    priority
-                  />
-                )}
+                <Image
+                  src={logoUrl}
+                  alt={logoAlt}
+                  width={80}
+                  height={80}
+                  className="w-12 h-12"
+                  priority
+                  unoptimized={logoUrl.startsWith("http")}
+                />
               </a>
             </div>
 
