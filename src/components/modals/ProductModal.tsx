@@ -88,20 +88,14 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
               {/* Product Image */}
               <div className="flex justify-center mb-6">
                 <div className="relative w-64 h-64 lg:w-80 lg:h-80">
-                  {isExternal ? (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-                    />
-                  ) : (
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover rounded-2xl"
-                    />
-                  )}
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover rounded-2xl"
+                    sizes="(max-width: 1024px) 256px, 320px"
+                    unoptimized={isExternal}
+                  />
                 </div>
               </div>
 

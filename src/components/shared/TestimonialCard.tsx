@@ -17,27 +17,29 @@ export function TestimonialCard({
   // Before/After photo cards
   if (variant === "before" || variant === "after") {
     const imageSrc = variant === "before" ? testimonial.beforeImage : testimonial.afterImage;
+    if (!imageSrc) {
+      return (
+        <div
+          className={`relative aspect-[3/4] overflow-hidden rounded-xl bg-gray-100 ${
+            variant === "before" ? "w-full md:w-1/2 md:mx-auto" : "w-full"
+          }`}
+        />
+      );
+    }
     const isExternal = typeof imageSrc === "string" && imageSrc.startsWith("http");
 
     return (
       <div className={`relative aspect-[3/4] overflow-hidden rounded-xl ${
         variant === "before" ? "w-full md:w-1/2 md:mx-auto" : "w-full"
       }`}>
-        {isExternal ? (
-          <img
-            src={imageSrc}
-            alt={`${testimonial.name} - ${variant === "before" ? "Before" : "After"}`}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <Image
-            src={imageSrc}
-            alt={`${testimonial.name} - ${variant === "before" ? "Before" : "After"}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-          />
-        )}
+        <Image
+          src={imageSrc}
+          alt={`${testimonial.name} - ${variant === "before" ? "Before" : "After"}`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+          unoptimized={isExternal}
+        />
       </div>
     );
   }
