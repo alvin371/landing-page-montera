@@ -68,7 +68,7 @@ function FeatureIcon({ item }: { item: LandingPageFeatureItem }) {
     return (
       <Image
         src={item.icon_url}
-        alt={item.icon_alt ?? item.title}
+        alt={item.icon_alt ?? item.title ?? "Feature icon"}
         width={20}
         height={20}
         className="w-5 h-5 object-contain"
